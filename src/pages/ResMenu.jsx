@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { MdArrowBack } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom'
 import SearchBar from '../components/home/SearchBar';
@@ -9,6 +9,8 @@ import ResInfoCard from '../components/resMenu/ResInfoCard';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadMenuByResId } from '../redux/actions/restaurantActions';
 import { useLocationContext } from '../context/LocationContext';
+import FoodFilter from '../components/resMenu/FoodFilter';
+import { preFoodFilter } from '../utils/preFoodFilter';
 
 const ResMenu = () => {
 
@@ -17,13 +19,30 @@ const ResMenu = () => {
 
     //To toggle the visible catergory indices
     const [visibleIndicesSet, setVisibleIndicesSet] = useState(new Set([0]));
+    // for filtering veg and non-veg
+    const [filter, setFilter] = useState('veg');
 
     // Storing the id's of each item added in the cart
     const [cartItems, setCartItems] = useState([]);
 
     const dispatch = useDispatch();
+
     // Main categories List and Res Card Info Obj
     const { categories: categoriesList, restaurantInfo: resObj, loading } = useSelector((state) => state.menu);
+
+    // Pre-compute all filter versions only once when categoriesList changes
+
+    const { all, veg, nonVeg } = useMemo(() => (
+        preFoodFilter(categoriesList)
+    ), [categoriesList]);
+
+    // Select the appropriate filtered list based on current filter
+    const filteredCategories =
+        filter == 'veg' ? veg :
+            filter == 'non-veg' ? nonVeg :
+                all;
+                
+    // console.log(filteredCategories);
 
     //to send coordinates while dispatching loadResData();
     const { location: loc } = useLocationContext();
@@ -60,6 +79,7 @@ const ResMenu = () => {
                 lng
             }));
         }
+        // console.log(categoriesList);
     }, [categoriesList, resObj, dispatch, id])
 
     return (
@@ -80,20 +100,9 @@ const ResMenu = () => {
                 <div className="search-bar-area md:w-full">
                     <SearchBar placeholderText={'Search for Dishes'} />
                 </div>
-                <div className="filters mt-5 w-full py-3 flex gap-5">
-                    <label className="inline-flex items-center cursor-pointer">
-                        <input id='caterogy-filter' type="checkbox" value="" className="sr-only peer" />
-                        <div className="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4  after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Veg</span>
-                    </label>
-                    <label className="inline-flex items-center cursor-pointer">
-                        <input id='caterogy-filter' type="checkbox" value="" className="sr-only peer" />
-                        <div className="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4  after:transition-all dark:border-gray-600 peer-checked:bg-red-600 dark:peer-checked:bg-red-600"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Non Veg</span>
-                    </label>
-                </div>
+                <FoodFilter filter={filter} setFilter={setFilter} />
                 <div className={`category-list ${categoriesList.length > 0 && 'bg-gray-200/80'} w-full space-y-3 sm:space-y-5 py-5`}>
-                    {categoriesList?.map((category, index) => (
+                    {filteredCategories?.map((category, index) => (
                         <CategoryCard
                             cartItems={cartItems}
                             key={category.card?.card?.categoryId}
