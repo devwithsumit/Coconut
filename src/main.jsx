@@ -3,13 +3,20 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './redux/store.js';
+import { LocationProvider } from './context/LocationContext.jsx';
 
 const root = createRoot(document.getElementById('root'));
 
 root.render(
   //<StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+  <BrowserRouter>
+    <Provider store={store}>
+      <LocationProvider>
+        <App />
+      </LocationProvider>
+    </Provider>
+  </BrowserRouter>
   //</StrictMode>
 )
