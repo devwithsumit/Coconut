@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../components/home/SearchBar';
-import ResCard, { PromotedResCard } from '../components/home/resCard';
+import ResCard, { PromotedResCard } from '../components/home/ResCard';
 import { useSelector } from 'react-redux';
 import Loading from './Loading';
 import SearchPanel from './SearchPanel';
