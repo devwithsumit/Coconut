@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react"
-import ResCard, { PromotedResCard } from "../components/home/resCard"
+import ResCard, { PromotedResCard } from "../components/home/ResCard"
 
 import mockData from './mocks/resCarMock.json';
 import { expect } from "vitest";

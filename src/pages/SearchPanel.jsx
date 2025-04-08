@@ -1,5 +1,4 @@
-import React from 'react'
-import ResCard, { PromotedResCard } from '../components/home/resCard'
+import ResCard, { PromotedResCard } from '../components/home/ResCard'
 
 const SearchPanel = ({ searchList }) => {
     const EnhancedCard = PromotedResCard(ResCard);
